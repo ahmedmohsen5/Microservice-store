@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cartservice
+  namespace: microservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      service: cartservice
+  template:
+    metadata:
+      labels:
+        service: cartservice
+    spec:
+      containers:
+      - name: cartservice
+        image: cartservice
+        imagePullPolicy: Never
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "1"
+        ports:
+        - containerPort: 7070
+        env:
+        - name: REDIS_ADDR
+          value: "redis-cart:6379"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cart
+  namespace: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: redis-cart
+  template:
+    metadata:
+      labels:
+        service: redis-cart
+    spec:
+      containers:
+      - name: redis
+        image: redis:alpine
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+      volumes:
+      - name: redis-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cart
+  namespace: microservice
+spec:
+  selector:
+    service: redis-cart
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cartservice
+  namespace: microservice
+spec:
+  selector:
+    service: cartservice
+  type: ClusterIP
+  ports:
+  - name: grpc
+    port: 7070
+    targetPort: 7070

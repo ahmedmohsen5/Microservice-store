@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: grpc-client
+  namespace: microservice
+  annotations:
+    "kubectl.kubernetes.io/last-applied-configuration": |
+      {"apiVersion":"v1","kind":"Pod","metadata":{"name":"grpc-client","namespace":"microservice","annotations":{},"labels":{},"ownerReferences":[]},"spec":{"containers":[{"name":"grpc-client","image":"grpcurl","command":["/bin/sh"],"tty":true,"stdin":true,"resources":{"requests":{"memory":"64Mi","cpu":"250m"},"limits":{"memory":"128Mi","cpu":"500m"}}}],"restartPolicy":"Never"}}
+spec:
+  containers:
+  - name: grpc-client
+    image: grpcurl
+    imagePullPolicy: Never
+    command: ["/bin/sh"]
+    tty: true
+    stdin: true
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+  restartPolicy: Never

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adservice
+  namespace: microservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      service: adservice
+  template:
+    metadata:
+      labels:
+        service: adservice
+    spec:
+      containers:
+      - name: adservice
+        image: adservice
+        imagePullPolicy: Never
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "1"
+        ports:
+        - containerPort: 9555
+        env:
+        - name: Port
+          value: "9555"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  adservice 
+  namespace: microservice
+spec:
+  selector:
+    service:  adservice
+  type:  ClusterIP
+  ports:
+  - name:  port
+    port:  9555
+    targetPort:  9555

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productcatalogservice
+  namespace: microservice
+  labels:
+    service: productcatalogservice
+spec:
+  selector:
+    matchLabels:
+      service: productcatalogservice
+  template:
+    metadata:
+      labels:
+        service: productcatalogservice
+    spec:
+      containers:
+      - image: productcatalogservice
+        name: productcatalogservice
+        imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: "20m"
+            memory: "55M"
+          limits:
+            cpu: "100m"
+            memory: "100M"
+        env:
+        - name: PORT
+          value: "3550"
+        - name: DISABLE_PROFILER
+          value: "1"       
+        ports:
+        - containerPort:  3550
+          name: productcatalog
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: productcatalogservice 
+  namespace: microservice
+spec:
+  selector:
+    service: productcatalogservice 
+  type:  ClusterIP 
+  ports:
+  - name: productcatalogservice 
+    port:  3550
+    targetPort:  3550

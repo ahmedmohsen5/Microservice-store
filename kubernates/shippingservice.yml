@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shippingservice
+  namespace: microservice
+  labels:
+    service: shippingservice
+spec:
+  selector:
+    matchLabels:
+      service: shippingservice
+  template:
+    metadata:
+      labels:
+        service: shippingservice
+    spec:
+      containers:
+      - image: shippingservice
+        name: shippingservice
+        imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: "20m"
+            memory: "55M"
+          limits:
+            cpu: "100m"
+            memory: "100M"
+        env:
+        - name: PORT
+          value: "50051"
+        - name: DISABLE_PROFILER
+          value: "1"       
+        ports:
+        - containerPort:  50051
+          name: shippingservice
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: shippingservice
+  namespace: microservice
+spec:
+  selector:
+    service: shippingservice
+  type:  ClusterIP 
+  ports:
+  - name: shippingservice
+    port:  50051
+    targetPort:  50051

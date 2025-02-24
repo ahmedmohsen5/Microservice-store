@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paymentservice
+  namespace: microservice
+  labels:
+    service: paymentservice
+spec:
+  selector:
+    matchLabels:
+      service: paymentservice
+  template:
+    metadata:
+      labels:
+        service: paymentservice
+    spec:
+      containers:
+      - image: paymentservice
+        name: paymentservice
+        imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: "20m"
+            memory: "55M"
+          limits:
+            cpu: "100m"
+            memory: "100M"
+        env:
+        - name: PORT
+          value: "50051"
+        - name: DISABLE_PROFILER
+          value: "1"       
+        ports:
+        - containerPort:  50051
+          name: paymentservice
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: paymentservice
+  namespace: microservice
+spec:
+  selector:
+    service: paymentservice
+  type:  ClusterIP 
+  ports:
+  - name: paymentservice
+    port:  50051
+    targetPort:  50051
